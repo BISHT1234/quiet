@@ -1,0 +1,42 @@
+
+#cardusername{
+    font-size: small;
+    margin: 0;
+    align-self: flex-end;
+    padding-top: 10px;
+    display: none;
+}
+
+#cardname{
+    font-size: larger;
+    margin-top: 10px;
+    margin-left: 10px;
+    /* margin-top: 10px; */
+}
+
+#cardbody{
+    background-color: antiquewhite;
+    width: 90%;
+    height: 60px;
+    display: grid;
+grid-template-columns: 10% 80% 10%;
+    margin: 10px;
+}
+#carddp{
+    height: 40px;
+border-radius: 30px;
+align-self: center;
+margin-top: 5px;
+margin-left: 0;
+width: 40px;
+}
+ #cardbody div p{
+    margin-left: 10px;
+ }
+ #num{
+    background-color: aqua;
+    height: 20px;
+    width: 16px;
+    border-radius: 10px;
+    align-self: center;
+ }

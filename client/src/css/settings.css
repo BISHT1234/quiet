@@ -1,0 +1,31 @@
+#settings{
+    width: 30vw;
+}
+#profile_picture{
+    height: 110px;
+    width: 110px;
+    border-radius: 60px;
+    margin-left:20%;
+    margin-top: 10%;
+    
+}
+#uploadbutton{
+    height: 30px;
+    width: 80px;
+    margin-top: 8px;
+    display: block;
+    border-radius: 10px;
+    color: blue;
+    border-color: white;
+}
+@media (max-width:600px){
+    #settings{
+        width: 100%;
+    }
+    #profile_picture{
+        margin-left:30%;
+        margin-top: 5%;
+        margin-bottom: 5%;
+    }
+ 
+}
