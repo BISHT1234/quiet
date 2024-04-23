@@ -13,7 +13,7 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
     cors: {
-      origin: "http://192.168.29.37:3000",
+      origin: "https://quiiett.netlify.app/",
       methods: ["GET", "POST"]
     }
   });;
@@ -222,5 +222,8 @@ console.log(err)
         })
 
           });
+          if(process.env.NODE_ENV =="production"){
+            app.use(express.static("client/build"));
+          }
  server.listen(PORT)
 
