@@ -15,6 +15,13 @@
     border-radius: 5px;
     
   }
+  #friends{
+    overflow: auto;
+    height: calc(100% - 50px);
+  }
+  #pcontainer{
+    height: calc(100vh - 50px);
+}
   @media (max-width:900px){
     #search-section{
       width: 99%;

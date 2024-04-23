@@ -39,6 +39,7 @@ var model;
 var sender;
 var sender_id;
 var array=[];
+const PORT=process.env.PORT || 4000;
 async function connection(){
   await  mongoose.connect('mongodb+srv://ohitbisht:321bishtmohit@cluster0.4m0y6nc.mongodb.net/quiet?retryWrites=true&w=majority',{useNewUrlParser:true})
   .then(res=>{
@@ -221,5 +222,5 @@ console.log(err)
         })
 
           });
- server.listen(4000)
+ server.listen(PORT)
 

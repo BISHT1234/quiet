@@ -101,9 +101,9 @@ set_emptyconvo(false)
 return( <div>
         {isMobile?<div id="mobile_home"><Navbar open={set_open_setting} src={`http://192.168.29.37:4000/`+a.self.profile_picture}></Navbar>
        {open_setting?<Settings close={set_open_setting} src={a.self.profile_picture}></Settings> 
-       :<><div>
+       :<><div id="moblielist">
        {search_or_chat?
-       <div>{conversation_list.map(creatcard)}</div>
+       <div >{conversation_list.map(creatcard)}</div>
         :<Searchnew></Searchnew>}</div>
        <div id="navbutn">
     <div id="navchat" style={{backgroundColor:`${background_chat}`}} onClick={()=>{set_search_or_chat(true); setbackground_chat('white');setbackground_search('gray') }}>Chats</div>
