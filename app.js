@@ -18,7 +18,7 @@ const io = require("socket.io")(server, {
     }
   });;
   const corsOpts = {
-    origin: '*',
+    origin: 'https://quiiett.netlify.app',
   
     methods: [
       'GET',
@@ -31,7 +31,7 @@ const io = require("socket.io")(server, {
   };
 //const io = new Server(server);
  ////////////
- app.use(cors())
+ app.use(cors(corsOpts))
  app.use(express.static('uploads'));
  app.use(bodyParser.json({limit: '500mb'}))
 app.use(bodyParser.urlencoded({extended:true,limit: '500mb'}))
