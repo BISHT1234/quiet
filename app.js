@@ -43,18 +43,17 @@ const PORT=process.env.PORT || 4000;
 async function connection(){
   await  mongoose.connect('mongodb+srv://ohitbisht:321bishtmohit@cluster0.4m0y6nc.mongodb.net/quiet?retryWrites=true&w=majority',{useNewUrlParser:true})
   .then(res=>{
-    console.log("connected")
+    
   })
    const schema=new mongoose.Schema({
-       Name:{
-        type:String,required:true}
-       ,
-        Email:{
-            type:String,required:true},
+    Name:{
+      type:String,required:true
+    },
+    Email:{
+      type:String,required:true},
         Password:{
             type:String,required:true},
-        Username:{
-            type:String,required:true},
+       
         profile_picture:{
               type:String
             }
@@ -72,7 +71,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
       
-      cb(null, `${Date.now()}+${file.originalname}`)
+      cb(null, `${Date.now()}+${req.params.id}.${req.params.ex}`)
     }
 })
 const upload = multer({ storage: storage })
@@ -94,11 +93,13 @@ app.get('/',(req,res)=>{
     res.send("Hello world")
 })
 app.post('/creatuser',(req,res)=>{
- const user=new model({Name:req.body.Name,
-    Email:req.body.Email,
+  console.log(req.body);
+ const user=new model({
+  Name:req.body.Name,
+  Email:req.body.Email,
     Password:req.body.Password,
-    Username:req.body.Username,
-  profile_picture:'null' })
+ 
+  profile_picture:'' })
  user.save()
  res.send("succes")
 
@@ -139,8 +140,7 @@ res.json({users:array})  })
         app.post('/creatrooms',creat_conversation.creat_conversation)
         app.post('/sendmssg/:id',creat_conversation.sendmessage)
         app.get('/getmessages/:id',getmessages.getmessages)
-        app.post('/upload',upload.single('file'),(req,res)=>{
-            console.log("filename"+req.file.filename)
+        app.post(`/upload/:id/:ex`,upload.single('file'),(req,res)=>{
 res.send(req.file.filename)
         })
         app.get('/getcoversations/:id',async(req,res)=>{
@@ -158,12 +158,24 @@ res.send(req.file.filename)
         app.get('/unreaded/:id',getmessages.numberofunreaded)
         app.post('/clearchat',creat_conversation.clearchat)
         app.post('/block',creat_conversation.blocked)
+        app.post('/updatename',async(req,res)=>{
+          try{
+            await model.updateOne({_id:req.body.id},{
+              $set : {
+                Name: req.body.Name
+              }
+            });
+          }
+          catch(err){
+            console.log(err)
+                      }
+        }
+      )
         app.post('/updatepic',async(req,res)=>{
-          console.log(req.body)
         try{  const result= await model.updateOne({_id:req.body.id},{
-            $set : {
-              profile_picture: req.body.url
-            }
+          $set : {
+            profile_picture: req.body.url
+          }
           });
           await creat_conversation.conversation_model.updateMany({reciver_id:req.body.id},{
             $set : {
