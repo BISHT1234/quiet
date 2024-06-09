@@ -5,11 +5,42 @@ const multer  = require('multer')
 const creat_conversation =require('./backfunctions')
 const getmessages=require('./getmessages')
 const bodyParser=require('body-parser')
+const jwt=require('jsonwebtoken')
 const mongoose=require('mongoose')
+
 const { useParams } = require('react-router-dom')
  const app=express();
  ///////////
+
+ ///firebase
+ const admin = require('firebase-admin');
+
+ const initializeApp =
+  {
+    type: "service_account",
+    project_id: "quiet-a9f1e",
+    private_key_id: "0db069cddf034990fca0a60b7199394460a23c88",
+    private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCrgPhdwaBvRyvc\nPDPZEl9tRcyE9YnEoZUqnB3kXQ3229jA0ITFhnHEh5eYsSWIFzpq0u8nv9ZepueV\nmmvrjEKWZKv00OZhm6VbpKKJkzJjiS8cwKpWdO5KQPRcwh9BAe/smCvMW1UDDdaY\niZ5bSBlm/rdJNKiSh75y8Tu0TKAePghTJRgIiKy3/mqmvIMK+a+Tf37UwlNvZVCd\nuaCNtO0xMa9A8Ia6codl19e5hc/v6DrkHC+A2GD2X/BwTlkR3tvhhLcAWi8QFVqv\noLUvaYte7Of2YqPNxbTyccNanJBxe/2zQm2aB+MxYITqhSxmYd3kOSUpRznT0yKj\nOZ06G//VAgMBAAECggEAOAfLnL3cj15eKvaULc/90zJhjfK2DsKHfENC1M+99y9+\nEghNyEaTNpTh5yXA0ERednXxYjgfbg7zTAIGTg8l1gKP10zEZ5E1JcqUu4OWi8RO\n2wLq45ISI7oy23ckRNXAL7jLXllcXcIQoQcc8E+O1QJUmRsWE8E7bEv5qH78NMSf\n2hpbZ3oNurNQrV5U7nFkrulPuRQv8xTR4X5gYTcw2QIIiFC53JDAJRu08aEg86dz\nV5yU52bdZxjdQLb6cWY07kbMQy/rFEANeMPJAqhXye9BQgDKmN7CoNaXMVG0pWHb\n6wPebVBiFebxoWW5Ks1hfnKG5SfRU9MU3aYKTShkpQKBgQDnNH35rECbnkvFEiIJ\nH7vpbWe0T6wvVBXrlFytghXptkjVbpm9iipMUW6Z7+VkFBpnaLuBGVvfLQg5b2FD\nCpESli2Qp5f28jIl7ThYZkCnZ4dQdYfjhyjAzHqULTFxeW47gdbRMv/NwBYzhurJ\n8DoPRdIuP90G2HNWuAEBaVo9YwKBgQC95XBHuEsEgE7IJoIU2oKkS+AdOuXM+gat\nBdIl8u+ow5UZ7ZWv0ECeM1ghitqzwWY5K8W7L5e11V4ejTuH02GO8OGKHJdvjpBQ\nsSCjZTkrfJdmcV7Kid0ti05VqpeKKF0iTPh6D7EbjIPMW3frWEsrudFx2h0uhsUS\nUl7n5GGPZwKBgAekLn2v+bqq8qoivUk76UP/v6uv7mrqBodwsddyMzM0ORgEvcQL\n6vX2wwcHbLdwCqdcSMYthmHL5TewvLAwizboC716LIWW351tR610Q7LEsy4vlDwq\n3Wfx2iNHkxjDAKeq1OS5IMc2EAXH8b6W1/RlRFsO9Ukioj09e5sGVlstAoGBALll\nd+mNlDAg1Mm0TuvtKf8d1QC0sAcfU8U5GaLTPAiYasmVm766o1vQ5QpadotpFlRa\n2AGYxZVRa0KIwMYrKeRUaN5ea7sOhPdC94qPGPHMAkSSCunTD42XpDMfCjRolAUZ\nAL6q807iMQsjgkDTQxC9qi5ttG/oRB9PLDlaT6WhAoGALGZ4RHMDIp+NcwIiB7N5\n+drKcJIQTKSaDnHKrVWBHQRgtYgf6BJZ/CUe4wwrN/aQcH2hgikoMvH7jo4NWq0S\nAGHv24CZhnkdf6MFrvFw/3figj700BRgeyrXCiW9QGulA8fK4mBWS4BTbjkXDjxk\npUAC2313sLBYAHXn+xmT2aA=\n-----END PRIVATE KEY-----\n",
+    client_email: "firebase-adminsdk-cue5b@quiet-a9f1e.iam.gserviceaccount.com",
+    client_id: "104182925427396864937",
+    auth_uri: "https://accounts.google.com/o/oauth2/auth",
+    token_uri: "https://oauth2.googleapis.com/token",
+    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+    client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-cue5b%40quiet-a9f1e.iam.gserviceaccount.com",
+    universe_domain: "googleapis.com"
+  
+};
+admin.initializeApp({
+  credential: admin.credential.cert(initializeApp),
+  storageBucket: "quiet-a9f1e.appspot.com"
+})
+const fireStorage=admin.storage();
+// const mediaref =ref(fireStorage)
+
+//
+
 const http = require('http');
+
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
     cors: {
@@ -38,7 +69,7 @@ app.use(bodyParser.urlencoded({extended:true,limit: '500mb'}))
 var model;
 var sender;
 var sender_id;
-var array=[];
+var secratKey='ATOz12345678910ancdefghijklmno'
 const PORT=process.env.PORT || 4000;
 async function connection(){
   await  mongoose.connect('mongodb+srv://ohitbisht:321bishtmohit@cluster0.4m0y6nc.mongodb.net/quiet?retryWrites=true&w=majority',{useNewUrlParser:true})
@@ -74,7 +105,8 @@ const storage = multer.diskStorage({
       cb(null, `${Date.now()}+${req.params.id}.${req.params.ex}`)
     }
 })
-const upload = multer({ storage: storage })
+const fstorage= multer.memoryStorage()
+const upload = multer({ storage: fstorage })
 /////////
 // async function Array(){
 //     array=[]
@@ -92,7 +124,7 @@ const upload = multer({ storage: storage })
 app.get('/',(req,res)=>{
     res.send("Hello world")
 })
-app.post('/creatuser',(req,res)=>{
+app.post('/api/creatuser',(req,res)=>{
   console.log(req.body);
  const user=new model({
   Name:req.body.Name,
@@ -104,7 +136,7 @@ app.post('/creatuser',(req,res)=>{
  res.send("succes")
 
 })
-app.post('/chekuser',async (req,res)=>{
+app.post('/api/chekuser',async (req,res)=>{
     let email =req.body.email;
     let password = req.body.password
  model.findOne({Email:email})
@@ -113,7 +145,8 @@ app.post('/chekuser',async (req,res)=>{
         if(user.Password===password){
        //     console.log(user)
             sender=user
-            res.json({exist:true,User:user})
+            const token= jwt.sign({user},secratKey)
+            res.json({exist:true,User:user,token})
                 sender_id=user._id
         }else{
             console.log("incorrect password")
@@ -126,7 +159,16 @@ app.post('/chekuser',async (req,res)=>{
     }
  })
 })
-app.post('/getfriends',async(req,res)=>{
+app.post('/api/verifytoken',async(req,res)=>{
+  const token=req.body.token;
+  const decode=jwt.verify(token,secratKey);
+  // const user= {
+  //   _id:decode.id,
+  //   Name:decode.username
+  // };
+  res.json({decode})
+})
+app.post('/api/getfriends',async(req,res)=>{
    let array=[]
    await model.find({}).then(
     res=>{
@@ -137,13 +179,14 @@ app.post('/getfriends',async(req,res)=>{
 )
 res.json({users:array})  })
 
-        app.post('/creatrooms',creat_conversation.creat_conversation)
-        app.post('/sendmssg/:id',creat_conversation.sendmessage)
-        app.get('/getmessages/:id',getmessages.getmessages)
-        app.post(`/upload/:id/:ex`,upload.single('file'),(req,res)=>{
-res.send(req.file.filename)
+        app.post('/api/creatrooms',creat_conversation.creat_conversation)
+        app.post('/api/sendmssg/:id',creat_conversation.sendmessage)
+        app.get('/api/getmessages/:id',getmessages.getmessages)
+        app.post(`/api/upload/:id/:ex`,upload.single('file'),(req,res)=>{
+
+
         })
-        app.get('/getcoversations/:id',async(req,res)=>{
+        app.get('/api/getcoversations/:id',async(req,res)=>{
                var array=[]
                const sender_id=req.params['id']
             await creat_conversation.conversation_model.find({sender_id:sender_id},null,{sort:{"updatedAt":-1}}).then(
@@ -155,10 +198,10 @@ res.send(req.file.filename)
             res.send(array)
         })
         
-        app.get('/unreaded/:id',getmessages.numberofunreaded)
-        app.post('/clearchat',creat_conversation.clearchat)
-        app.post('/block',creat_conversation.blocked)
-        app.post('/updatename',async(req,res)=>{
+        app.get('/api/unreaded/:id',getmessages.numberofunreaded)
+        app.post('/api/clearchat',creat_conversation.clearchat)
+        app.post('/api/block',creat_conversation.blocked)
+        app.post('/api/updatename',async(req,res)=>{
           try{
             await model.updateOne({_id:req.body.id},{
               $set : {
@@ -171,7 +214,7 @@ res.send(req.file.filename)
                       }
         }
       )
-        app.post('/updatepic',async(req,res)=>{
+        app.post('/api/updatepic',async(req,res)=>{
         try{  const result= await model.updateOne({_id:req.body.id},{
           $set : {
             profile_picture: req.body.url
@@ -190,11 +233,14 @@ res.send(req.file.filename)
 console.log(err)
           }
         })
-        app.get('/getmydetails',async(req,res)=>{
-          model.findOne({_id:req.body.id}).then((self)=>{
+        app.get('/api/getmydetails/:id',async(req,res)=>{
+          model.findOne({_id:req.params['id']}).then((self)=>{
+           console.log(req.params['id'])
             res.send(self)
+            
            })
         })
+      
         //connection
         io.on('connection', (socket) => {
           console.log('socket connected')

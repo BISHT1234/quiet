@@ -20,6 +20,9 @@ const Mschema=new mongoose.Schema({
     message:{
         type:String
        },
+       type:{
+        type:String
+       },
        status:{
         type:String,
         required: true

@@ -51,12 +51,12 @@ const sendmessage= async (req,res)=>{
 }
 await newmessage.save().then(
     async response=>{
-     await conversation_model.findByIdAndUpdate(conversationid,{message:value});
+     await conversation_model.findByIdAndUpdate(conversationid,{message:value,type:type});
      var status;
      conversation_model.findOne({_id:conversationid}).then(block=>{
         if(block.status==='unblock')
      {  message.save().then(async()=>{
-        await conversation_model.findByIdAndUpdate(reciverroom,{message:value});
+        await conversation_model.findByIdAndUpdate(reciverroom,{message:value,type:type});
            res.send(response)
        })}
     else{
