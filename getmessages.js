@@ -23,8 +23,10 @@ catch{
 
 }
 const numberofunreaded=async (req,res)=>{
+
 try{
   const conversationid=req.params['id']
+console.log(req.params['id']);
   messagemodel.find({conversation_id:conversationid,status:'unreaded'}).then(
     mssgs=>{
       let int=mssgs.length

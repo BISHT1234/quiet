@@ -44,12 +44,12 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
     cors: {
-      origin: "https://quiiett.netlify.app",
+      origin: "http://192.168.29.37:3000",
       methods: ["GET", "POST"]
     }
   });;
   const corsOpts = {
-    origin: 'https://quiiett.netlify.app',
+    origin: 'http://192.168.29.37:3000',
   
     methods: [
       'GET',
@@ -139,6 +139,7 @@ app.post('/api/creatuser',(req,res)=>{
 app.post('/api/chekuser',async (req,res)=>{
     let email =req.body.email;
     let password = req.body.password
+    console.log(email+"jdbj")
  model.findOne({Email:email})
  .then(user=>{
     if(user){
@@ -240,7 +241,8 @@ console.log(err)
             
            })
         })
-      
+      app.post('/api/delete-message/:id',creat_conversation.delete_message);
+      app.post('/api/unsend',creat_conversation.unsend)
         //connection
         io.on('connection', (socket) => {
           console.log('socket connected')
@@ -277,6 +279,9 @@ console.log(err)
         })
         socket.on('dpupdate',(data)=>{
           io.emit('changedp',null)
+        })
+        socket.on('message_unsend',reciver=>{
+          socket.to(reciver).emit('on_unsend',true)
         })
 
           });

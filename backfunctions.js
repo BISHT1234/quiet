@@ -96,4 +96,29 @@ const blocked=async(req,res)=>{
     
 
 }
-module.exports={creat_conversation,sendmessage,conversation_model,clearchat,blocked}
+const delete_message=async(req,res)=>{
+var delete_message_id=req.params['id'];
+const deleted = await messagemodel.findOneAndDelete({_id:delete_message_id});
+res.send('deleted');
+}
+const unsend =async(req,res)=>{
+  var  time =new Date( req.body.datetime);
+  const hour=time.getHours();
+  const minute=time.getMinutes();
+  var  message_value=req.body.value;
+  const start = new Date();
+  start.setHours(hour, minute, 0, 0);
+  const end = new Date();
+  end.setHours(hour, minute, 59, 999);
+  const result = await messagemodel.deleteMany({
+    value:message_value,
+    createdAt: {
+        $gte: start,
+        $lte: end
+    }
+});
+if(result){
+    res.send(result)
+}
+}
+module.exports={creat_conversation,sendmessage,conversation_model,clearchat,blocked,delete_message,unsend}
