@@ -44,12 +44,12 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
     cors: {
-      origin: "https://quiiett.netlify.app",
+      origin: "https://quiiett.netlify.app" || 'http://192.168.29.37:3000',
       methods: ["GET", "POST"]
     }
   });;
   const corsOpts = {
-    origin: 'https://quiiett.netlify.app',
+    origin: 'https://quiiett.netlify.app' || 'http://192.168.29.37:3000',
   
     methods: [
       'GET',
