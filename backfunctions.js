@@ -6,10 +6,88 @@ const creat_conversation=async (req,res)=>{
   await conversation_model.findOne({sender_id:req.body.s_id ,reciver_id:req.body.r_id}).then(
    async (response)=>{
         if(response){ 
-            await conversation_model.findOne({sender_id:req.body.r_id ,reciver_id:req.body.s_id})
-            .then(
-                reciveres=>{//console.log(response.reciver_id)
-            res.send({senderroom:response,reciverroom:reciveres}) })
+
+          await conversation_model.findOne({sender_id:req.body.r_id ,reciver_id:req.body.s_id})
+          .then(
+              reciveres=>{//console.log(response.reciver_id)
+          res.send({senderroom:response,reciverroom:reciveres}) })
+    //         var senderroom,reciverroom ;
+
+    //  const results= await  conversation_model.aggregate([
+    //   {
+    //     $project:{
+    //       "_id":{
+    //         "$toString":"$_id"
+    //       }
+          
+    //     }
+    //   },
+    //   {
+    //      $lookup:{ from: 'messages', 
+    //             localField: '_id',
+    //              foreignField: 'conversation_id', 
+    //             as: 'message'}
+    //         },{
+    //           "$addFields": {
+    //             "message": {
+    //               "$last": "$message"
+    //             }
+    //           }
+    //         },
+    //         {
+    //           "$addFields": {
+    //             "message": "$message.value",
+    //              "type": "$message.type"
+    //           }
+    //         }
+
+    //         ])
+               
+    //               if (results.length > 0) {
+    //                 senderroom=results[0];
+    //                 console.log(results[0]); // This simulates findOne by taking the first result
+    //               } else {
+    //                 console.log('No matching document found');
+    //               }
+                
+            
+    //         await conversation_model.findOne({sender_id:req.body.r_id ,reciver_id:req.body.s_id})
+    //         .then(
+    //         async  (  reciveres)=>{//console.log(response.reciver_id)
+    //               const results= await  conversation_model.aggregate([{
+    //                     $lookup:{ from: 'messages', 
+    //                        localField: '_id',
+    //                         foreignField: 'conversation_id', 
+    //                        as: 'message'}
+    //                    }, {
+    //                        "$addFields": {
+    //                          "message": {
+    //                            "$last": "$message"
+    //                          }
+    //                        }
+    //                      },
+    //                      {
+    //                        "$addFields": {
+    //                          "message": "$message.value",
+    //                           "type": "$message.type"
+    //                        }
+    //                      },{
+    //                        $match:{
+    //                            "_id":reciveres._id
+    //                        }
+    //                      }
+           
+    //                    ])
+                        
+    //                       if (results.length > 0) {
+    //                         reciverroom=results[0];
+    //                         console.log(results[0]); // This simulates findOne by taking the first result
+    //                       } else {
+    //                         console.log('No matching document found');
+    //                       }
+                        
+                   
+    //         res.send({senderroom:senderroom,reciverroom:reciverroom}) })
         }
         else{
            // console.log("reciver id "+req.body.r_id)

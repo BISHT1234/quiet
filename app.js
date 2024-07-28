@@ -44,7 +44,8 @@ const http = require('http');
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
     cors: {
-      origin: "https://quiiett.netlify.app" || 'http://192.168.29.37:3000',
+      
+      origin:  'http://192.168.29.37:3000',
       methods: ["GET", "POST"]
     }
   });;
@@ -191,12 +192,59 @@ res.json({users:array})  })
         app.get('/api/getcoversations/:id',async(req,res)=>{
                var array=[]
                const sender_id=req.params['id']
-            await creat_conversation.conversation_model.find({sender_id:sender_id},null,{sort:{"updatedAt":-1}}).then(
-                res=>{
-                res.forEach(element => {
-                    array.push(element)
-                });
-                } )
+            // await creat_conversation.conversation_model.find({sender_id:sender_id},null,{sort:{"updatedAt":-1}}).then(
+            //     res=>{
+                  
+            //     res.forEach(element => {
+            //         array.push(element)
+            //     });
+            //     } )
+            const result= await creat_conversation.conversation_model.aggregate([
+              {
+                $project:{
+                  "_id":{
+                    $toString:"$_id"
+                  },
+                  "sender_id":1,
+                  "reciver_id":1,
+                  "sender_name":1,
+                  "reciver_name":1,
+                  "status":1,
+                  "reciver_dp":1,
+                  "createdAt":1,
+                  "updatedAt":1
+
+                }
+              },{
+                $lookup:{
+        "from": "messages",
+       "localField": "_id",
+       "foreignField": "conversation_id",
+       "as": "message"
+                }
+              },
+              {
+                $match:{
+                  "sender_id":sender_id
+                }
+              },
+              {
+                $addFields:{
+                  "message":{
+                    $last:"$message"
+                  }
+                }
+              },
+              {
+                $addFields:{
+                  "message":"$message.value",
+                  "type":"message.type"
+              }
+            }
+            ])
+            result.forEach(element => {
+              array.push(element);
+            });
             res.send(array)
         })
         
