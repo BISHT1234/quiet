@@ -2,12 +2,14 @@
 const express =require('express')
 const cors= require('cors')
 const multer  = require('multer')
+const fs = require('fs')
 const creat_conversation =require('./backfunctions')
 const getmessages=require('./getmessages')
 const bodyParser=require('body-parser')
 const jwt=require('jsonwebtoken')
 const mongoose=require('mongoose')
-
+// import{API} from './api' 
+const API = "http://localhost:3000" || "http://192.168.29.37:3000"
 const { useParams } = require('react-router-dom')
  const app=express();
  ///////////
@@ -45,12 +47,13 @@ const server = http.createServer(app);
 const io = require("socket.io")(server, {
     cors: {
       
-      origin:  'https://quiiett.netlify.app',
+      origin: "*",
       methods: ["GET", "POST"]
     }
   });;
   const corsOpts = {
-    origin: 'https://quiiett.netlify.app',
+    
+    origin: "*",
   
     methods: [
       'GET',
@@ -74,7 +77,7 @@ var sender_id;
 var secratKey='ATOz12345678910ancdefghijklmno'
 const PORT=process.env.PORT || 4000;
 async function connection(){
-  await  mongoose.connect('mongodb+srv://ohitbisht:321bishtmohit@cluster0.4m0y6nc.mongodb.net/quiet?retryWrites=true&w=majority',{useNewUrlParser:true})
+  await  mongoose.connect('mongodb+srv://ohitbisht:321bishtmohit@cluster0.4m0y6nc.mongodb.net/quiet?retryWrites=true&w=majority',{ })
   .then(res=>{
     
   })
@@ -97,18 +100,23 @@ Array()
 
 }
 connection()/////////////
+const uploadDir = './uploads';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
     
     destination: function (req, file, cb) {
-      cb(null, './uploads')
+      cb(null, uploadDir)
     },
     filename: function (req, file, cb) {
-      
-      cb(null, `${Date.now()}+${req.params.id}.${req.params.ex}`)
+      console.log("12",file.originalname)
+      cb(null, `${Date.now()}+${file.originalname}`)
     }
 })
 const fstorage= multer.memoryStorage()
-const upload = multer({ storage: fstorage })
+const upload = multer({ storage: storage })
 /////////
 // async function Array(){
 //     array=[]
@@ -139,9 +147,10 @@ app.post('/api/creatuser',(req,res)=>{
 
 })
 app.post('/api/chekuser',async (req,res)=>{
+
     let email =req.body.email;
     let password = req.body.password
-    console.log(email+"jdbj")
+    console.log("jdbj")
  model.findOne({Email:email})
  .then(user=>{
     if(user){
@@ -183,10 +192,17 @@ app.post('/api/getfriends',async(req,res)=>{
 res.json({users:array})  })
 
         app.post('/api/creatrooms',creat_conversation.creat_conversation)
-        app.post('/api/sendmssg/:id',creat_conversation.sendmessage)
+        app.post('/api/sendmssg/:id',upload.array('file',10),creat_conversation.sendmessage)
         app.get('/api/getmessages/:id',getmessages.getmessages)
-        app.post(`/api/upload/:id/:ex`,upload.single('file'),(req,res)=>{
+        app.post(`/api/upload/:id/:ex`,upload.array('file'),(req,res)=>{
+          try{
+          
+            res.send(req.files)
+          }
+catch(err){
 
+  res.send(err)
+}
 
         })
         app.get('/api/getcoversations/:id',async(req,res)=>{
@@ -238,7 +254,7 @@ res.json({users:array})  })
               {
                 $addFields:{
                   "message":"$message.value",
-                  "type":"message.type"
+                  "type":"$message.type"
               }
             }
             ])
@@ -251,16 +267,20 @@ res.json({users:array})  })
         app.get('/api/unreaded/:id',getmessages.numberofunreaded)
         app.post('/api/clearchat',creat_conversation.clearchat)
         app.post('/api/block',creat_conversation.blocked)
-        app.post('/api/updatename',async(req,res)=>{
+        app.post('/api/updateprofile',async(req,res)=>{
           try{
             await model.updateOne({_id:req.body.id},{
               $set : {
-                Name: req.body.Name
+                Name: req.body.Name,
+                Password:req.body.Password,
+                Email:req.body.Email
               }
             });
+            res.send('sucess');
           }
           catch(err){
             console.log(err)
+            res.send(err)
                       }
         }
       )

@@ -116,20 +116,20 @@ const sendmessage= async (req,res)=>{
         //console.log(conversationid)
         const senderid=req.body.sender
         const value=req.body.message
-        const type=req.body.type
+        const files=req.body.files
      const reciverroom=req.body.reciverroom 
+     var type=req.body.type
+     if(files.length>0)
+    { type=files[files.length - 1].type}
    var newmessage;
    var message;
-     if(type!='string'){
-        newmessage= messagemodel({sender_id:senderid,value:value,type:type,conversation_id:conversationid,discription:req.body.discription,status:'unreaded'})
-       message = messagemodel({sender_id:senderid,value:value,type:type,conversation_id:reciverroom,discription:req.body.discription,status:'unreaded'})
-     }else
-{ newmessage= messagemodel({sender_id:senderid,value:value,type:type,conversation_id:conversationid,status:'unreaded'})
- message= messagemodel({sender_id:senderid,value:value,type:type,conversation_id:reciverroom,status:'unreaded'})
-}
+    
+ newmessage= messagemodel({sender_id:senderid,value:value,files:files,type:type,conversation_id:conversationid,status:'unreaded'})
+ message= messagemodel({sender_id:senderid,value:value,type:type,files:files,conversation_id:reciverroom,status:'unreaded'})
+
 await newmessage.save().then(
     async response=>{
-     await conversation_model.findByIdAndUpdate(conversationid,{message:value,type:type});
+ await conversation_model.findByIdAndUpdate(conversationid,{message:value,type:type});
      var status;
      conversation_model.findOne({_id:conversationid}).then(block=>{
         if(block.status==='unblock')
